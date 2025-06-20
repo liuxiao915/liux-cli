@@ -1,0 +1,23 @@
+{
+  "name": "liux-cli",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bin": {
+    "liux": "index.js"
+  },
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "commander": "^14.0.0",
+    "download-git-repo": "^3.0.2",
+    "log-symbols": "^7.0.1",
+    "ora": "^8.2.0"
+  },
+  "devDependencies": {},
+  "description": ""
+}
