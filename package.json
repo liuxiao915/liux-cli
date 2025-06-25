@@ -1,6 +1,7 @@
 {
   "name": "liux-cli",
   "version": "1.0.0",
+  "description": "本文介绍了如何创建一个像VueCLI那样的脚手架工具liux-cli，包括初始化脚本映射、使用commander解析命令行参数、设计命令参数、准备模板、下载模板及增强用户体验。",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,15 +10,19 @@
   "author": "",
   "license": "ISC",
   "bin": {
-    "liux": "index.js"
+    "liux": "./bin/index.js"
   },
   "dependencies": {
-    "chalk": "^5.4.1",
-    "commander": "^14.0.0",
-    "download-git-repo": "^3.0.2",
-    "log-symbols": "^7.0.1",
-    "ora": "^8.2.0"
-  },
-  "devDependencies": {},
-  "description": ""
+    "chalk": "^4.0.0",
+    "clui": "^0.3.6",
+    "co": "^4.6.0",
+    "co-prompt": "^1.0.0",
+    "commander": "^8.1.0",
+    "figlet": "^1.5.0",
+    "fs": "0.0.1-security",
+    "inquirer": "^8.2.0",
+    "request": "^2.88.2",
+    "rimraf": "^3.0.2",
+    "semver": "^7.3.5"
+  }
 }

@@ -30,6 +30,12 @@ console.log('liux-cli脚手架工具')
 
 5、然后再使用 npm link命令 就可以实现 将 该文件映射到全局了
 
+如果要去掉link，只需要执行unlink命令即可。
+
+```git
+npm unlink
+```
+
 6、试着在cmd中输入 liux，发现成功执行index.js
 
 ## 二、使用commander解析命令行参数
@@ -74,16 +80,6 @@ npm install ora
 
 2.在index.js中引入并使用
 
-## 七、使用chalk 和 logSymbols增加文本样式
-
-1.下载chalk
-
-```git
-npm install chalk log-symbols
-```
-
-引入并使用
-
 ## 八、npm发布
 
 打开npm官网
@@ -100,7 +96,162 @@ npm install chalk log-symbols
 
 在npm官网搜索，看看是否发布成功
 
-## 九、项目源码以及笔记
+## 九、安装测试
+
+npm unlink当前项目，获取到本地npm下面删除相关的命令脚本和文件。全局安装cli
+
+```git
+npm i liux-cli -g
+```
+
+## 十、从git下载
+
+上述完成的只能下载预设的模板，如果需要更改模板什么的，就需要重新发布，所以改为从Git clone项目。
+
+## 添加git地址
+
+修改tempList.json，将原来的下载模板改为git地址。
+
+```json
+[{
+        "name": "react",
+        "value": "git@github.com:guobaogang/wechat-yatzy-server.git"
+    },
+    {
+        "name": "vue",
+        "value": "git@github.com:guobaogang/vue-js-tmp.git"
+    }
+]
+```
+
+## git clone方法
+
+在utils.js中增加克隆git项目的方法，child_process为nodejs内置方法，不用安装。
+
+```js
+// lib/utils.js
+const exec = require('child_process').exec
+/**
+* 克隆git项目
+*/
+gitClone(filename, gitUrl, branch = 'master') {
+  let cmdStr = `git clone ${gitUrl} ${filename} && cd ${filename} && git checkout ${branch}`;
+  exec(cmdStr, (error, stdout, stderr) => {
+    if (error) {
+      console.log(error)
+      process.exit();
+    }
+    console.log('克隆完成');
+  })
+}
+```
+
+init.js中修改调用方法
+
+```js
+// lib/init.js
+const Utils = require('./utils');
+module.exports = () => {
+  Utils.createQuestion().then(res => {
+    const { filename, templName } = res;
+    Utils.gitClone(filename, templName)
+  })
+}
+```
+
+## 十一、一些细节处理
+
+## 删除.git
+
+克隆成功之后代码中有.git，这个是不需要的，得删除
+
+安装rimraf插件，克隆成功后删除.git。
+
+注意：虽然前面有cd到文件夹，但是当前运行环境并没有真的cd到该文件夹，所以路径并不是./.git
+
+```js
+// lib/untis.js
+
+const rimraf = require('rimraf')
+gitClone(filename, gitUrl, branch = 'master') {
+  let cmdStr = `git clone ${gitUrl} ${filename} && cd ${filename} && git checkout ${branch}`;
+  exec(cmdStr, (error, stdout, stderr) => {
+    if (error) {
+      console.log(error)
+      process.exit();
+    }
+    rimraf.sync(`./${filename}/.git`) 
+    //注意：虽然前面有cd到文件夹，但是当前运行环境并没有真的cd到该文件夹，所以路径并不是./.git
+    console.log('克隆完成');
+  })
+}
+```
+
+## 运行提示
+
+由于网络或者Git仓库过大等原因，clone的时候时间会比较长，需要有一个正在运行的提示。
+
+```js
+// lib/utils.js
+const CLI = require('clui'),
+    Spinner = CLI.Spinner;
+
+gitClone(filename, gitUrl, branch = 'master') {
+  let cmdStr = `git clone ${gitUrl} ${filename} && cd ${filename} && git checkout ${branch}`;
+  let countdown = new Spinner('努力加载中，请稍后...  ', ['⣾', '⣽', '⣻', '⢿', '⡿', '⣟', '⣯', '⣷']);
+  countdown.start();
+  exec(cmdStr, (error, stdout, stderr) => {
+    if (error) {
+      console.log(error)
+      process.exit();
+    }
+    rimraf.sync(`./${filename}/.git`)
+    console.log('克隆完成');
+    countdown.stop()
+  })
+}
+```
+
+## 美化输出
+
+提示文字有点难看，可以使用chalk和figlet插件优化一下
+
+比如讲克隆完成的文字改为红色。
+
+```js
+// lib/utils.js
+const chalk = require('chalk');
+console.log(chalk.red('\n克隆完成'));
+// ## 七、使用chalk 和 logSymbols增加文本样式
+// 1.下载chalk
+// ```git
+// npm install chalk log-symbols
+// ```
+
+// 引入并使用
+```
+
+比如在使用init命令的时候，输出一个peach-cli的大写文字
+
+```js
+//lib/init.js
+const Utils = require('./utils');
+const chalk = require('chalk');
+const figlet = require('figlet');
+
+module.exports = () => {
+  console.log(
+    chalk.green(figlet.textSync('PEACH-CLI', { horizontalLayout: 'full' }))
+  )
+
+  Utils.createQuestion().then(res => {
+    const { filename, templName } = res;
+    Utils.gitClone(filename, templName)
+  })
+}
+```
+
+## 十、项目源码以及笔记
 
 ```js
 #!/usr/bin/env node
@@ -113,7 +264,7 @@ const download = require('download-git-repo')
 // const logSymbols = require('log-symbols')
 program
   .version('0.1.0')//输出对应的版本号
-
+// command为命令名称，alias为别名，action是执行脚本
 program
   .command('create <project>')
   .description('初始化项目模板')

@@ -1,0 +1,1 @@
+console.log('vue2 template');
