@@ -1,6 +1,7 @@
 [
   { "name": "vue2", "value": "vue2" },
   { "name": "vue3",  "value": "vue3" },
+  { "name": "szc-h5",  "value": "szc-h5" },
   { "name": "react", "value": "git@github.com:guobaogang/wechat-yatzy-server.git" },
   { "name": "vue", "value": "git@github.com:guobaogang/vue-js-tmp.git"},
   { "name": "vite-vue", "value": "https://github.com/liuxiao915/liux-cli.git"}

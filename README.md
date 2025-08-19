@@ -28,7 +28,7 @@ console.log('liux-cli脚手架工具')
   },
 ```
 
-5、然后再使用 npm link命令 就可以实现 将 该文件映射到全局了
+5、然后再使用 npm link命令 就可以实现将该文件映射到全局了
 
 如果要去掉link，只需要执行unlink命令即可。
 
@@ -56,9 +56,60 @@ npm install commander
 
 在index.js中将复制过来的代码简化。
 
-## 四、准备模板
+## 四、准备模板，下载模板
 
-在github创建一个仓库当作模板
+在github创建一个仓库当作模板，项目中本地也准备了一些模板，可以通过模板列表的值判断是否是链接地址来判断是本地模板，还是线上模板，然后通过不同的方式下载模板
+
+修改tempList.json，将原来的下载模板改为git地址。
+
+### 添加git地址
+
+```json
+[{
+        "name": "react",
+        "value": "git@github.com:guobaogang/wechat-yatzy-server.git"
+    },
+    {
+        "name": "vue",
+        "value": "git@github.com:guobaogang/vue-js-tmp.git"
+    }
+]
+```
+
+### git clone方法
+
+在utils.js中增加克隆git项目的方法，child_process为nodejs内置方法，不用安装。
+
+```js
+// lib/utils.js
+const exec = require('child_process').exec
+/**
+* 克隆git项目
+*/
+gitClone(filename, gitUrl, branch = 'master') {
+  let cmdStr = `git clone ${gitUrl} ${filename} && cd ${filename} && git checkout ${branch}`;
+  exec(cmdStr, (error, stdout, stderr) => {
+    if (error) {
+      console.log(error)
+      process.exit();
+    }
+    console.log('克隆完成');
+  })
+}
+```
+
+init.js中修改调用方法
+
+```js
+// lib/init.js
+const Utils = require('./utils');
+module.exports = () => {
+  Utils.createQuestion().then(res => {
+    const { filename, templName } = res;
+    Utils.gitClone(filename, templName)
+  })
+}
+```
 
 ## 五、根据liux create 命令 将模板下载到本地
 
@@ -104,64 +155,10 @@ npm unlink当前项目，获取到本地npm下面删除相关的命令脚本和�
 npm i liux-cli -g
 ```
 
-## 十、从git下载
-
-上述完成的只能下载预设的模板，如果需要更改模板什么的，就需要重新发布，所以改为从Git clone项目。
-
-## 添加git地址
-
-修改tempList.json，将原来的下载模板改为git地址。
-
-```json
-[{
-        "name": "react",
-        "value": "git@github.com:guobaogang/wechat-yatzy-server.git"
-    },
-    {
-        "name": "vue",
-        "value": "git@github.com:guobaogang/vue-js-tmp.git"
-    }
-]
-```
-
-## git clone方法
-
-在utils.js中增加克隆git项目的方法，child_process为nodejs内置方法，不用安装。
-
-```js
-// lib/utils.js
-const exec = require('child_process').exec
-/**
-* 克隆git项目
-*/
-gitClone(filename, gitUrl, branch = 'master') {
-  let cmdStr = `git clone ${gitUrl} ${filename} && cd ${filename} && git checkout ${branch}`;
-  exec(cmdStr, (error, stdout, stderr) => {
-    if (error) {
-      console.log(error)
-      process.exit();
-    }
-    console.log('克隆完成');
-  })
-}
-```
-
-init.js中修改调用方法
-
-```js
-// lib/init.js
-const Utils = require('./utils');
-module.exports = () => {
-  Utils.createQuestion().then(res => {
-    const { filename, templName } = res;
-    Utils.gitClone(filename, templName)
-  })
-}
-```
 
 ## 十一、一些细节处理
 
-## 删除.git
+### 删除.git
 
 克隆成功之后代码中有.git，这个是不需要的，得删除
 
@@ -187,7 +184,7 @@ gitClone(filename, gitUrl, branch = 'master') {
 }
 ```
 
-## 运行提示
+### 运行提示
 
 由于网络或者Git仓库过大等原因，clone的时候时间会比较长，需要有一个正在运行的提示。
 
@@ -212,7 +209,7 @@ gitClone(filename, gitUrl, branch = 'master') {
 }
 ```
 
-## 美化输出
+### 美化输出
 
 提示文字有点难看，可以使用chalk和figlet插件优化一下
 
@@ -300,3 +297,5 @@ program
 program
   .parse(process.argv);
 ```
+
+引用https://juejin.cn/post/6989885344749617166

@@ -4,13 +4,19 @@
   "description": "本文介绍了如何创建一个像VueCLI那样的脚手架工具liux-cli，包括初始化脚本映射、使用commander解析命令行参数、设计命令参数、准备模板、下载模板及增强用户体验。",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx vuepress build"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "liux",
+    "cli",
+    "liux-cli"
+  ],
+  "author": "liuxiao",
   "license": "ISC",
   "bin": {
-    "liux": "./bin/index.js"
+    "liux": "./bin/index.js",
+    "liux-cli": "./bin/index.js"
   },
   "dependencies": {
     "chalk": "^4.0.0",

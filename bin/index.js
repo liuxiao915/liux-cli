@@ -13,6 +13,13 @@ program
     require('../lib/init')()
   })
 
+program
+  .command('build')
+  .description('打包')
+  // .option('-e, --env <env>', '指定环境', 'stg')
+  .action(() => {
+    require('../lib/build')()
+  })
 
 program
   .command('list')
